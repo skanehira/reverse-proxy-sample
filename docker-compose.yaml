@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: gorilla
+      MYSQL_DATABASE: session
+      MYSQL_USER: gorilla
+      MYSQL_PASSWORD: gorilla
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+    - 3306:3306
+  server1:
+    container_name: server1
+    image: server1
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+  server2:
+    container_name: server2
+    image: server2
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+  nginx:
+    container_name: nginx
+    image: nginx
+    ports:
+      - 80:8080
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/server.conf
